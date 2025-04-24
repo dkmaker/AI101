@@ -28,6 +28,20 @@ if (-not (Test-ApiKey -Config $config)) {
     exit 1
 }
 
+# Delete current.json if it exists to start fresh
+$saveDir = Join-Path -Path $scriptPath -ChildPath $config.chat.save_directory
+$currentPath = Join-Path -Path $saveDir -ChildPath "current.json"
+if (Test-Path $currentPath) {
+    Remove-Item -Path $currentPath -Force
+    Write-Host "Removed previous session state." -ForegroundColor Gray
+}
+
+# Ensure the examples directory exists
+if (-not (Test-Path $saveDir)) {
+    New-Item -ItemType Directory -Path $saveDir -Force | Out-Null
+    Write-Host "Created save directory: $saveDir" -ForegroundColor Gray
+}
+
 # Initialize conversation history
 $messages = @()
 
@@ -54,6 +68,9 @@ if ($ConversationPath) {
             Write-Host "[$($msg.role)]" -ForegroundColor $roleColor -NoNewline
             Write-Host " $($msg.content.Substring(0, [Math]::Min(50, $msg.content.Length)))..." -ForegroundColor Gray
         }
+        
+        # Save current state after loading a conversation
+        Save-CurrentState -Config $config -Messages $messages
     }
 }
 
@@ -73,6 +90,9 @@ if ($messages.Count -eq 0 -or $messages[0].role -ne "system") {
     }
     
     Write-Host "Using system prompt: $systemPromptContent" -ForegroundColor Magenta
+    
+    # Save current state after initializing system prompt
+    Save-CurrentState -Config $config -Messages $messages
 }
 
 # Variable to store image URL for multimodal messages
@@ -93,6 +113,40 @@ Write-Host "`nCurrent model: $($config.api.model)" -ForegroundColor Cyan
 Write-Host "Max tokens: $($config.api.max_tokens)" -ForegroundColor Cyan
 Write-Host "Temperature: $($config.api.temperature)" -ForegroundColor Cyan
 Write-Host "`n" -ForegroundColor Cyan
+
+# Function to save current state to examples/current.json
+function Save-CurrentState {
+    param (
+        [Parameter(Mandatory = $true)]
+        [PSCustomObject]$Config,
+        
+        [Parameter(Mandatory = $true)]
+        [Array]$Messages
+    )
+    
+    $saveDir = Join-Path -Path $scriptPath -ChildPath $Config.chat.save_directory
+    
+    if (-not (Test-Path $saveDir)) {
+        New-Item -ItemType Directory -Path $saveDir -Force | Out-Null
+    }
+    
+    $currentPath = Join-Path -Path $saveDir -ChildPath "current.json"
+    
+    try {
+        $currentData = @{
+            "timestamp" = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+            "model"     = $Config.api.model
+            "messages"  = $Messages
+        }
+        
+        $currentData | ConvertTo-Json -Depth 10 | Set-Content -Path $currentPath
+        return $true
+    }
+    catch {
+        Write-Host "Failed to save current state: $_" -ForegroundColor Red
+        return $false
+    }
+}
 
 # Function to display assistant response
 function Show-AssistantResponse {
@@ -168,6 +222,9 @@ try {
                 else {
                     $messages[0].content = $commandArgs
                     Write-Host "System prompt updated to: $commandArgs" -ForegroundColor Magenta
+                    
+                    # Save current state
+                    Save-CurrentState -Config $config -Messages $messages
                 }
                 continue
             }
@@ -182,6 +239,9 @@ try {
                     # Save the updated model to config.json
                     $configPath = Join-Path -Path $scriptPath -ChildPath "config.json"
                     $config | ConvertTo-Json -Depth 10 | Set-Content -Path $configPath
+                    
+                    # Save current state
+                    Save-CurrentState -Config $config -Messages $messages
                 }
                 continue
             }
@@ -205,6 +265,9 @@ try {
                     }
                 )
                 Write-Host "Conversation history cleared." -ForegroundColor Yellow
+                
+                # Save current state
+                Save-CurrentState -Config $config -Messages $messages
                 continue
             }
             elseif ($command -eq "/help") {
@@ -251,6 +314,9 @@ try {
             # Display assistant response
             Write-Host "Assistant: " -ForegroundColor Blue
             Show-AssistantResponse -ResponseText $response.content
+            
+            # Save current state after each response
+            Save-CurrentState -Config $config -Messages $messages
         }
         else {
             Write-Host "Failed to get a response from the API." -ForegroundColor Red

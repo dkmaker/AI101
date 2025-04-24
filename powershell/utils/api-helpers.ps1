@@ -62,17 +62,10 @@ function Get-Configuration {
     $scriptPath = Split-Path -Parent $PSScriptRoot
     $configPath = Join-Path -Path $scriptPath -ChildPath "config.json"
     $envPath = Join-Path -Path $scriptPath -ChildPath ".env"
-    $exampleConfigPath = Join-Path -Path $scriptPath -ChildPath "config.example.json"
     
-    # Check if config.json exists, if not suggest copying from example
+    # Check if config.json exists
     if (-not (Test-Path $configPath)) {
-        if (Test-Path $exampleConfigPath) {
-            Write-Host "Configuration file not found at: $configPath" -ForegroundColor Yellow
-            Write-Host "You can create one by copying from config.example.json:" -ForegroundColor Yellow
-            Write-Host "Copy-Item -Path '$exampleConfigPath' -Destination '$configPath'" -ForegroundColor Cyan
-        } else {
-            Write-Error "Configuration file not found at: $configPath and no example config found"
-        }
+        Write-Error "Configuration file not found at: $configPath"
         exit 1
     }
     

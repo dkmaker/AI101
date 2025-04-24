@@ -227,22 +227,17 @@ This repository includes a PowerShell-based chat client that:
 ### Key Components
 
 - **[chat-client.ps1](powershell/chat-client.ps1)** - Main script for the chat interface
-- **[config.example.json](powershell/config.example.json)** - Example configuration template (copy to config.json)
 - **[.env.example](powershell/.env.example)** - Example environment variables file for sensitive data (copy to .env)
 - **[utils/](powershell/utils/)** - Helper functions for API calls and state management
 
 ### Configuration
 
-The chat client supports two methods for configuration:
-
-1. **config.json**: Contains general settings like model preferences and defaults
-2. **.env file**: For sensitive information like API keys
+The chat client uses environment variables for configuration, which provides a secure way to store sensitive information like API keys.
 
 #### Setting up your configuration
 
-1. Copy the example configuration files:
+1. Copy the example environment file:
    ```powershell
-   Copy-Item -Path "powershell/config.example.json" -Destination "powershell/config.json"
    Copy-Item -Path "powershell/.env.example" -Destination "powershell/.env"
    ```
 
@@ -251,16 +246,16 @@ The chat client supports two methods for configuration:
    OPENROUTER_API_KEY=your_api_key_here
    ```
 
-3. Optionally, you can override other settings in the `.env` file:
+3. Optionally, you can configure other settings in the `.env` file:
    ```
    OPENROUTER_MODEL=anthropic/claude-3-opus
    OPENROUTER_TEMPERATURE=0.5
    OPENROUTER_MAX_TOKENS=2000
    ```
 
-Values in the `.env` file take precedence over those in `config.json`. This separation keeps sensitive data out of your configuration files and makes it easier to use different settings across environments.
+Using environment variables keeps sensitive data separate from your code and configuration files, making it easier to maintain security and use different settings across environments.
 
-> **Note**: Both `config.json` and `.env` are included in `.gitignore` to prevent accidentally committing sensitive information.
+> **Note**: The `.env` file is included in `.gitignore` to prevent accidentally committing sensitive information.
 
 ### Usage
 
