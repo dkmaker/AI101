@@ -1,5 +1,10 @@
 # AI101: Working with Large Language Models
 
+## Dedication
+
+This repository is dedicated to Maria - a gesture from DKMaker to help her learn the basics of AI and APIs. May this be the beginning of an exciting journey into the world of artificial intelligence and language models.
+
+
 ## Introduction
 
 Welcome to AI101, a comprehensive guide and toolkit for interacting with Large Language Models (LLMs) through OpenRouter API. This repository provides practical examples and tools for developers who want to understand and leverage LLM capabilities in their applications.
@@ -75,57 +80,23 @@ There are several ways to expose static data to an LLM:
 
 ### Basic Interaction Pattern
 
-```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│                 │     │                 │     │                 │
-│  System Prompt  │────▶│  User Message   │────▶│    LLM API      │
-│                 │     │                 │     │                 │
-└─────────────────┘     └─────────────────┘     └────────┬────────┘
-                                                         │
-                                                         ▼
-                                                ┌─────────────────┐
-                                                │                 │
-                                                │  AI Response    │
-                                                │                 │
-                                                └─────────────────┘
+```mermaid
+flowchart LR
+    A[System Prompt] --> B[User Message]
+    B --> C[LLM API]
+    C --> D[AI Response]
 ```
 
 ### Conversation Flow
 
-```
-┌─────────────────┐
-│                 │
-│  System Prompt  │
-│                 │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐     ┌─────────────────┐
-│                 │     │                 │
-│  User Message   │────▶│    LLM API      │
-│                 │     │                 │
-└─────────────────┘     └────────┬────────┘
-                                 │
-                                 ▼
-                        ┌─────────────────┐
-                        │                 │
-                        │  AI Response    │
-                        │                 │
-                        └────────┬────────┘
-                                 │
-                                 ▼
-                        ┌─────────────────┐     ┌─────────────────┐
-                        │                 │     │                 │
-                        │  User Message   │────▶│    LLM API      │
-                        │  + History      │     │                 │
-                        └─────────────────┘     └────────┬────────┘
-                                                         │
-                                                         ▼
-                                                ┌─────────────────┐
-                                                │                 │
-                                                │  AI Response    │
-                                                │                 │
-                                                └─────────────────┘
+```mermaid
+flowchart TD
+    A[System Prompt] --> B[User Message]
+    B --> C[LLM API]
+    C --> D[AI Response]
+    D --> E[User Message + History]
+    E --> F[LLM API]
+    F --> G[AI Response]
 ```
 
 ### Example Interaction
@@ -256,8 +227,40 @@ This repository includes a PowerShell-based chat client that:
 ### Key Components
 
 - **[chat-client.ps1](powershell/chat-client.ps1)** - Main script for the chat interface
-- **[config.json](powershell/config.json)** - Configuration settings including API keys
+- **[config.example.json](powershell/config.example.json)** - Example configuration template (copy to config.json)
+- **[.env.example](powershell/.env.example)** - Example environment variables file for sensitive data (copy to .env)
 - **[utils/](powershell/utils/)** - Helper functions for API calls and state management
+
+### Configuration
+
+The chat client supports two methods for configuration:
+
+1. **config.json**: Contains general settings like model preferences and defaults
+2. **.env file**: For sensitive information like API keys
+
+#### Setting up your configuration
+
+1. Copy the example configuration files:
+   ```powershell
+   Copy-Item -Path "powershell/config.example.json" -Destination "powershell/config.json"
+   Copy-Item -Path "powershell/.env.example" -Destination "powershell/.env"
+   ```
+
+2. Edit your `.env` file to add your OpenRouter API key:
+   ```
+   OPENROUTER_API_KEY=your_api_key_here
+   ```
+
+3. Optionally, you can override other settings in the `.env` file:
+   ```
+   OPENROUTER_MODEL=anthropic/claude-3-opus
+   OPENROUTER_TEMPERATURE=0.5
+   OPENROUTER_MAX_TOKENS=2000
+   ```
+
+Values in the `.env` file take precedence over those in `config.json`. This separation keeps sensitive data out of your configuration files and makes it easier to use different settings across environments.
+
+> **Note**: Both `config.json` and `.env` are included in `.gitignore` to prevent accidentally committing sensitive information.
 
 ### Usage
 
