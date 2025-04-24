@@ -4,7 +4,7 @@
       "baseUrl": "https://openrouter.ai/api/v1"
     },
     "development": {
-      "apiKey": "your-openrouter-api-key-here"
+      "apiKey": "TYPE API KEY HERE"
     },
     "production": {
       "apiKey": "${OPENROUTER_API_KEY}"
@@ -17,5 +17,8 @@
   },
   "[powershell]": {
     "files.encoding": "utf8"
-  }
+  },
+  "powershell.promptToUpdatePowerShell": true,
+  "powershell.powerShellDefaultVersion": "Windows PowerShell (x86)",
+  "terminal.integrated.defaultProfile.windows": "Windows PowerShell"
 }
