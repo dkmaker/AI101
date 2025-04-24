@@ -1,0 +1,183 @@
+# OpenRouter Chat Completions API Examples
+# This file demonstrates various ways to use the OpenRouter Chat Completions API
+
+# Before using these examples:
+# 1. Install the REST Client extension for VS Code
+# 2. Set up your API key in .vscode/settings.json (see README.md)
+# 3. Click "Send Request" above any request to execute it
+
+### Basic Chat Completion
+# This is the simplest form of chat completion request
+POST {{baseUrl}}/chat/completions
+Content-Type: application/json
+Authorization: Bearer {{apiKey}}
+HTTP-Referer: https://ai101.example.com
+X-Title: AI101 REST Client
+
+{
+  "model": "openai/chatgpt-4o-latest",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant."
+    },
+    {
+      "role": "user",
+      "content": "Hello! Can you explain what an API is in simple terms?"
+    }
+  ]
+}
+
+### Chat Completion with Temperature Control
+# Adjusting temperature affects randomness (0.0 = deterministic, 1.0 = creative)
+POST {{baseUrl}}/chat/completions
+Content-Type: application/json
+Authorization: Bearer {{apiKey}}
+HTTP-Referer: https://ai101.example.com
+X-Title: AI101 REST Client
+
+{
+  "model": "openai/chatgpt-4o-latest",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant."
+    },
+    {
+      "role": "user",
+      "content": "Write a short poem about programming."
+    }
+  ],
+  "temperature": 0.7
+}
+
+### Chat Completion with Conversation History
+# This example shows how to maintain a conversation by including previous messages
+POST {{baseUrl}}/chat/completions
+Content-Type: application/json
+Authorization: Bearer {{apiKey}}
+HTTP-Referer: https://ai101.example.com
+X-Title: AI101 REST Client
+
+{
+  "model": "openai/chatgpt-4o-latest",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant that specializes in PowerShell."
+    },
+    {
+      "role": "user",
+      "content": "How do I list all files in a directory using PowerShell?"
+    },
+    {
+      "role": "assistant",
+      "content": "To list all files in a directory using PowerShell, you can use the `Get-ChildItem` cmdlet (which has aliases `dir` and `ls`):\n\n```powershell\nGet-ChildItem -Path C:\\YourDirectory\n```\n\nIf you want to list only files (not directories):\n\n```powershell\nGet-ChildItem -Path C:\\YourDirectory -File\n```\n\nOr if you want to list files recursively in all subdirectories:\n\n```powershell\nGet-ChildItem -Path C:\\YourDirectory -Recurse -File\n```"
+    },
+    {
+      "role": "user",
+      "content": "How can I filter to show only .txt files?"
+    }
+  ]
+}
+
+### Chat Completion with Response Format Control
+# Request JSON output from the model
+POST {{baseUrl}}/chat/completions
+Content-Type: application/json
+Authorization: Bearer {{apiKey}}
+HTTP-Referer: https://ai101.example.com
+X-Title: AI101 REST Client
+
+{
+  "model": "openai/chatgpt-4o-latest",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant."
+    },
+    {
+      "role": "user",
+      "content": "Generate a JSON object representing a person with properties for name, age, email, and a list of hobbies."
+    }
+  ],
+  "response_format": { "type": "json_object" }
+}
+
+### Chat Completion with Maximum Tokens
+# Limit the length of the response
+POST {{baseUrl}}/chat/completions
+Content-Type: application/json
+Authorization: Bearer {{apiKey}}
+HTTP-Referer: https://ai101.example.com
+X-Title: AI101 REST Client
+
+{
+  "model": "openai/chatgpt-4o-latest",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant."
+    },
+    {
+      "role": "user",
+      "content": "Explain quantum computing."
+    }
+  ],
+  "max_tokens": 100
+}
+
+### Chat Completion with System Prompt Focusing
+# Use a detailed system prompt to guide the model's behavior
+POST {{baseUrl}}/chat/completions
+Content-Type: application/json
+Authorization: Bearer {{apiKey}}
+HTTP-Referer: https://ai101.example.com
+X-Title: AI101 REST Client
+
+{
+  "model": "openai/chatgpt-4o-latest",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a PowerShell expert who provides code examples with detailed explanations. Your responses should be structured with:\n1. A brief explanation of the approach\n2. The complete code solution\n3. A line-by-line explanation of how the code works\n4. Common pitfalls to avoid"
+    },
+    {
+      "role": "user",
+      "content": "Write a script to find the largest files in a directory."
+    }
+  ]
+}
+
+### Multimodal Chat Completion with Image Input
+# This example demonstrates how to include an image in your request
+POST {{baseUrl}}/chat/completions
+Content-Type: application/json
+Authorization: Bearer {{apiKey}}
+HTTP-Referer: https://ai101.example.com
+X-Title: AI101 REST Client
+
+{
+  "model": "openai/chatgpt-4o-latest",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant that can analyze images."
+    },
+    {
+      "role": "user",
+      "content": [
+        {
+          "type": "text",
+          "text": "What's in this image?"
+        },
+        {
+          "type": "image_url",
+          "image_url": {
+            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
+          }
+        }
+      ]
+    }
+  ]
+}

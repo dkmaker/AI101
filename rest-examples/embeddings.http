@@ -1,0 +1,91 @@
+# OpenRouter Embeddings API Examples
+# This file demonstrates how to use the OpenRouter Embeddings API to generate vector representations of text
+
+# Before using these examples:
+# 1. Install the REST Client extension for VS Code
+# 2. Set up your API key in .vscode/settings.json (see README.md)
+# 3. Click "Send Request" above any request to execute it
+
+### Basic Text Embedding
+# Generate embeddings for a single text input
+POST {{baseUrl}}/embeddings
+Content-Type: application/json
+Authorization: Bearer {{apiKey}}
+HTTP-Referer: https://ai101.example.com
+X-Title: AI101 REST Client
+
+{
+  "model": "openai/text-embedding-ada-002",
+  "input": "The quick brown fox jumps over the lazy dog."
+}
+
+### Multiple Text Embeddings
+# Generate embeddings for multiple text inputs in a single request
+POST {{baseUrl}}/embeddings
+Content-Type: application/json
+Authorization: Bearer {{apiKey}}
+HTTP-Referer: https://ai101.example.com
+X-Title: AI101 REST Client
+
+{
+  "model": "openai/text-embedding-ada-002",
+  "input": [
+    "The quick brown fox jumps over the lazy dog.",
+    "Machine learning is a subset of artificial intelligence.",
+    "PowerShell is a cross-platform task automation solution."
+  ]
+}
+
+### Embeddings with Dimensions Control
+# Specify the number of dimensions for the embedding vectors
+POST {{baseUrl}}/embeddings
+Content-Type: application/json
+Authorization: Bearer {{apiKey}}
+HTTP-Referer: https://ai101.example.com
+X-Title: AI101 REST Client
+
+{
+  "model": "openai/text-embedding-3-small",
+  "input": "The quick brown fox jumps over the lazy dog.",
+  "dimensions": 256
+}
+
+### Embeddings for Semantic Search
+# Generate embeddings that can be used for semantic search
+POST {{baseUrl}}/embeddings
+Content-Type: application/json
+Authorization: Bearer {{apiKey}}
+HTTP-Referer: https://ai101.example.com
+X-Title: AI101 REST Client
+
+{
+  "model": "openai/text-embedding-ada-002",
+  "input": "How do I use PowerShell to manage Windows services?"
+}
+
+### Embeddings with User Identifier
+# Include a user identifier for tracking and rate limiting
+POST {{baseUrl}}/embeddings
+Content-Type: application/json
+Authorization: Bearer {{apiKey}}
+HTTP-Referer: https://ai101.example.com
+X-Title: AI101 REST Client
+
+{
+  "model": "openai/text-embedding-ada-002",
+  "input": "The quick brown fox jumps over the lazy dog.",
+  "user": "user-123"
+}
+
+### Embeddings for Code
+# Generate embeddings for code snippets
+POST {{baseUrl}}/embeddings
+Content-Type: application/json
+Authorization: Bearer {{apiKey}}
+HTTP-Referer: https://ai101.example.com
+X-Title: AI101 REST Client
+
+{
+  "model": "openai/text-embedding-ada-002",
+  "input": "function calculateSum(a, b) {\n  return a + b;\n}"
+}

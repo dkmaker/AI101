@@ -1,0 +1,103 @@
+# OpenRouter Text Completions API Examples
+# This file demonstrates how to use the OpenRouter Completions API (legacy)
+# Note: The Chat Completions API is generally preferred for most use cases
+
+# Before using these examples:
+# 1. Install the REST Client extension for VS Code
+# 2. Set up your API key in .vscode/settings.json (see README.md)
+# 3. Click "Send Request" above any request to execute it
+
+### Basic Text Completion
+# Simple text completion with the legacy completions endpoint
+POST {{baseUrl}}/completions
+Content-Type: application/json
+Authorization: Bearer {{apiKey}}
+HTTP-Referer: https://ai101.example.com
+X-Title: AI101 REST Client
+
+{
+  "model": "openai/gpt-3.5-turbo-instruct",
+  "prompt": "Write a function in Python to calculate the Fibonacci sequence up to n terms.",
+  "max_tokens": 250
+}
+
+### Text Completion with Stop Sequence
+# Use stop sequences to control where the model stops generating
+POST {{baseUrl}}/completions
+Content-Type: application/json
+Authorization: Bearer {{apiKey}}
+HTTP-Referer: https://ai101.example.com
+X-Title: AI101 REST Client
+
+{
+  "model": "openai/gpt-3.5-turbo-instruct",
+  "prompt": "Write a PowerShell function to get system information. Include comments.\n\nfunction Get-SystemInfo {",
+  "max_tokens": 250,
+  "stop": ["}", "# End of function"]
+}
+
+### Text Completion with Temperature and Top P
+# Control randomness with temperature and nucleus sampling
+POST {{baseUrl}}/completions
+Content-Type: application/json
+Authorization: Bearer {{apiKey}}
+HTTP-Referer: https://ai101.example.com
+X-Title: AI101 REST Client
+
+{
+  "model": "openai/gpt-3.5-turbo-instruct",
+  "prompt": "Write a creative short story about a programmer who discovers a magical keyboard.",
+  "max_tokens": 300,
+  "temperature": 0.8,
+  "top_p": 0.9
+}
+
+### Text Completion with Multiple Prompts
+# Process multiple prompts in a single request
+POST {{baseUrl}}/completions
+Content-Type: application/json
+Authorization: Bearer {{apiKey}}
+HTTP-Referer: https://ai101.example.com
+X-Title: AI101 REST Client
+
+{
+  "model": "openai/gpt-3.5-turbo-instruct",
+  "prompt": [
+    "Convert this date to ISO format: March 14, 2023",
+    "Convert this date to ISO format: July 4, 1776",
+    "Convert this date to ISO format: December 31, 1999"
+  ],
+  "max_tokens": 20
+}
+
+### Text Completion with Presence and Frequency Penalties
+# Adjust penalties to reduce repetition
+POST {{baseUrl}}/completions
+Content-Type: application/json
+Authorization: Bearer {{apiKey}}
+HTTP-Referer: https://ai101.example.com
+X-Title: AI101 REST Client
+
+{
+  "model": "openai/gpt-3.5-turbo-instruct",
+  "prompt": "List 5 benefits of cloud computing for small businesses:",
+  "max_tokens": 200,
+  "temperature": 0.7,
+  "presence_penalty": 0.5,
+  "frequency_penalty": 0.5
+}
+
+### Text Completion with Logprobs
+# Get token log probabilities for analysis
+POST {{baseUrl}}/completions
+Content-Type: application/json
+Authorization: Bearer {{apiKey}}
+HTTP-Referer: https://ai101.example.com
+X-Title: AI101 REST Client
+
+{
+  "model": "openai/gpt-3.5-turbo-instruct",
+  "prompt": "The capital of France is",
+  "max_tokens": 5,
+  "logprobs": 5
+}

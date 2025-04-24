@@ -1,0 +1,310 @@
+a# OpenRouter Function/Tool Calling API Examples
+# This file demonstrates how to use the OpenRouter API for function/tool calling capabilities
+
+# Before using these examples:
+# 1. Install the REST Client extension for VS Code
+# 2. Set up your API key in .vscode/settings.json (see README.md)
+# 3. Click "Send Request" above any request to execute it
+
+### Basic Function Calling
+# This example shows how to define functions that the model can call
+POST {{baseUrl}}/chat/completions
+Content-Type: application/json
+Authorization: Bearer {{apiKey}}
+HTTP-Referer: https://ai101.example.com
+X-Title: AI101 REST Client
+
+{
+  "model": "openai/chatgpt-4o-latest",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant."
+    },
+    {
+      "role": "user",
+      "content": "What's the weather like in New York?"
+    }
+  ],
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_weather",
+        "description": "Get the current weather in a given location",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The city and state, e.g. San Francisco, CA"
+            },
+            "unit": {
+              "type": "string",
+              "enum": ["celsius", "fahrenheit"],
+              "description": "The temperature unit to use"
+            }
+          },
+          "required": ["location"]
+        }
+      }
+    }
+  ]
+}
+
+### Function Calling with Tool Choice
+# Force the model to call a specific function
+POST {{baseUrl}}/chat/completions
+Content-Type: application/json
+Authorization: Bearer {{apiKey}}
+HTTP-Referer: https://ai101.example.com
+X-Title: AI101 REST Client
+
+{
+  "model": "openai/chatgpt-4o-latest",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant."
+    },
+    {
+      "role": "user",
+      "content": "Convert 25 USD to EUR."
+    }
+  ],
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "convert_currency",
+        "description": "Convert an amount from one currency to another",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "amount": {
+              "type": "number",
+              "description": "The amount to convert"
+            },
+            "from_currency": {
+              "type": "string",
+              "description": "The currency code to convert from (e.g., USD, EUR, JPY)"
+            },
+            "to_currency": {
+              "type": "string",
+              "description": "The currency code to convert to (e.g., USD, EUR, JPY)"
+            }
+          },
+          "required": ["amount", "from_currency", "to_currency"]
+        }
+      }
+    }
+  ],
+  "tool_choice": {
+    "type": "function",
+    "function": {
+      "name": "convert_currency"
+    }
+  }
+}
+
+### Multiple Function Definitions
+# Define multiple functions that the model can choose from
+POST {{baseUrl}}/chat/completions
+Content-Type: application/json
+Authorization: Bearer {{apiKey}}
+HTTP-Referer: https://ai101.example.com
+X-Title: AI101 REST Client
+
+{
+  "model": "openai/chatgpt-4o-latest",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant."
+    },
+    {
+      "role": "user",
+      "content": "I need to book a flight from New York to London on December 15th and I also need to know the weather in London for that date."
+    }
+  ],
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "search_flights",
+        "description": "Search for flights between two locations",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "departure_city": {
+              "type": "string",
+              "description": "The city to depart from"
+            },
+            "destination_city": {
+              "type": "string",
+              "description": "The city to travel to"
+            },
+            "date": {
+              "type": "string",
+              "description": "The date of travel in YYYY-MM-DD format"
+            }
+          },
+          "required": ["departure_city", "destination_city", "date"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "get_weather_forecast",
+        "description": "Get the weather forecast for a specific location and date",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The city and country"
+            },
+            "date": {
+              "type": "string",
+              "description": "The date in YYYY-MM-DD format"
+            }
+          },
+          "required": ["location", "date"]
+        }
+      }
+    }
+  ]
+}
+
+### Function Calling with Previous Results
+# This example shows a conversation where function results are included
+POST {{baseUrl}}/chat/completions
+Content-Type: application/json
+Authorization: Bearer {{apiKey}}
+HTTP-Referer: https://ai101.example.com
+X-Title: AI101 REST Client
+
+{
+  "model": "openai/chatgpt-4o-latest",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant."
+    },
+    {
+      "role": "user",
+      "content": "What's the weather like in San Francisco?"
+    },
+    {
+      "role": "assistant",
+      "content": null,
+      "tool_calls": [
+        {
+          "id": "call_abc123",
+          "type": "function",
+          "function": {
+            "name": "get_weather",
+            "arguments": "{\"location\":\"San Francisco, CA\",\"unit\":\"celsius\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call_abc123",
+      "content": "{\"temperature\": 18, \"unit\": \"celsius\", \"description\": \"Partly cloudy\"}"
+    },
+    {
+      "role": "user",
+      "content": "How about in New York?"
+    }
+  ],
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_weather",
+        "description": "Get the current weather in a given location",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The city and state, e.g. San Francisco, CA"
+            },
+            "unit": {
+              "type": "string",
+              "enum": ["celsius", "fahrenheit"],
+              "description": "The temperature unit to use"
+            }
+          },
+          "required": ["location"]
+        }
+      }
+    }
+  ]
+}
+
+### Parallel Function Calling
+# This example demonstrates the model calling multiple functions in parallel
+POST {{baseUrl}}/chat/completions
+Content-Type: application/json
+Authorization: Bearer {{apiKey}}
+HTTP-Referer: https://ai101.example.com
+X-Title: AI101 REST Client
+
+{
+  "model": "openai/chatgpt-4o-latest",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant."
+    },
+    {
+      "role": "user",
+      "content": "I'm planning a trip to Paris and Rome next week. What will the weather be like, and what's the exchange rate from USD to EUR?"
+    }
+  ],
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_weather_forecast",
+        "description": "Get the weather forecast for a specific location",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The city and country"
+            }
+          },
+          "required": ["location"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "get_exchange_rate",
+        "description": "Get the current exchange rate between two currencies",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "from_currency": {
+              "type": "string",
+              "description": "The source currency code (e.g., USD)"
+            },
+            "to_currency": {
+              "type": "string",
+              "description": "The target currency code (e.g., EUR)"
+            }
+          },
+          "required": ["from_currency", "to_currency"]
+        }
+      }
+    }
+  ],
+  "parallel_tool_calls": true
+}

@@ -1,0 +1,21 @@
+{
+  "rest-client.environmentVariables": {
+    "$shared": {
+      "baseUrl": "https://openrouter.ai/api/v1"
+    },
+    "development": {
+      "apiKey": "your-openrouter-api-key-here"
+    },
+    "production": {
+      "apiKey": "${OPENROUTER_API_KEY}"
+    }
+  },
+  "editor.formatOnSave": true,
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true
+  },
+  "[powershell]": {
+    "files.encoding": "utf8"
+  }
+}
